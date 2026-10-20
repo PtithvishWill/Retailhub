@@ -1,0 +1,68 @@
+services:
+
+  bronze-streaming:
+    image: naveen9200/retailhub-spark-streaming:4.2.0
+    container_name: retailhub-bronze-streaming
+    user: root 
+    restart: unless-stopped
+
+    networks:
+      - retailhub-network
+
+    env_file:
+      - ../../.env
+
+    environment:
+      KAFKA_BROKER: ${KAFKA_BROKER:-kafka:29092}
+      BRONZE_PATH: /opt/retailhub/data/bronze
+      BRONZE_CHECKPOINT_PATH: /opt/retailhub/checkpoints/bronze
+
+    volumes:
+      - ../../data:/opt/retailhub/data
+      - ../../checkpoints:/opt/retailhub/checkpoints
+      - ../../logs:/opt/retailhub/logs
+
+    command:
+      - spark-submit
+      - /opt/retailhub/src/streaming/kafka_to_bronze.py
+
+
+  fraud-streaming:
+    image: naveen9200/retailhub-spark-streaming:4.2.0
+    container_name: retailhub-fraud-streaming
+    user: root 
+    restart: unless-stopped
+
+    networks:
+      - retailhub-network
+
+    env_file:
+      - ../../.env
+
+    environment:
+      KAFKA_BROKER: ${KAFKA_BROKER:-kafka:29092}
+      FRAUD_CHECKPOINT_PATH: /opt/retailhub/checkpoints/fraud_detection_v4
+
+      # Container storage path overrides (overrides host /home/naveen/ paths from .env)
+      FRAUDGUARD_DATA_PATH: /opt/retailhub/data/fraudguard
+      FRAUDGUARD_SIGNAL_PATH: /opt/retailhub/data/fraudguard/signals
+      FRAUDGUARD_INCIDENT_PATH: /opt/retailhub/data/fraudguard/incidents
+      FRAUDGUARD_STATE_PATH: /opt/retailhub/data/fraudguard/state
+      FRAUDGUARD_AUDIT_PATH: /opt/retailhub/data/fraudguard/audit
+      FRAUDGUARD_EVIDENCE_PATH: /opt/retailhub/data/fraudguard/evidence
+      FRAUDGUARD_LOG_PATH: /opt/retailhub/logs/fraudguard
+
+    volumes:
+      - ../../data:/opt/retailhub/data
+      - ../../checkpoints:/opt/retailhub/checkpoints
+      - ../../logs:/opt/retailhub/logs
+
+    command:
+      - spark-submit
+      - /opt/retailhub/src/streaming/fraud_consumer.py
+
+
+networks:
+  retailhub-network:
+    name: ${STREAMING_NETWORK:-kafka_default}
+    external: ${EXTERNAL_NETWORK:-true}

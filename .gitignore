@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+*/node_modules/
+*/*/node_modules/
+.pnpm-store/
+
+# Python virtual environments & bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+.pytest_cache/
+
+# Build & Compilation Outputs
+dist/
+*/dist/
+build/
+*/build/
+*.tsbuildinfo
+
+# Secrets & Environment variables
+.env
+.env.*
+*.example.aws.yml
+
+# Logs & Temp files
+*.log
+npm-debug.log*
+yarn-debug.log*
+checkpoints/
+logs/
+tmp/
+scratch/
+
+# IDE & OS files
+.DS_Store
+Thumbs.db
+.idea/
+*.suo
+*.swp
+*.bak

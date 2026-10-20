@@ -1,0 +1,22 @@
+services:
+  app:
+    #image: retailhub-web:latest if u dont give it dir name and app
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: nexday-platform
+
+    restart: always
+
+    ports:
+      - "5000:5000"
+
+    env_file:
+      - .env
+
+    volumes:
+      - nexday-event-logs:/app/backend/event_logs
+
+volumes:
+  nexday-event-logs:
